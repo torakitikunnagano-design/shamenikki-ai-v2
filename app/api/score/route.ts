@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 
-const client = new OpenAI({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -10,55 +10,27 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function GET() {
-  const { data, error } = await supabase
-    .from("scores")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(10);
-
-  if (error) {
-    return Response.json({
-      scores: [],
-      error: error.message,
-    });
-  }
-
-  return Response.json({
-    scores: data || [],
-  });
-}
-
 export async function POST(request: Request) {
   try {
-    const { diary, type } = await request.json();
+    const { diary, castName } = await request.json();
 
-    const response = await client.responses.create({
+    const response = await openai.responses.create({
       model: "gpt-4o-mini",
-      input: `
-あなたは写メ日記のプロ添削AIです。
+      input: `以下の写メ日記を100点満点で採点してください。
 
-以下の写メ日記を100点満点で採点してください。
-タイプは「${type}」です。
+【キャスト名】
+${castName || "未入力"}
 
-必ずこの形式だけで返してください。
-
-【総合スコア】80点
-【良いところ】
-・良い点を書く
-
-【改善点】
-・改善点を書く
-
-【タイトル案】
-・タイトルを書く
-
-【人気キャスト風改善例】
-改善例を書く
-
-本文：
+【写メ日記】
 ${diary}
-      `,
+
+以下の形式で返してください。
+
+点数：
+良い点：
+改善点：
+タイトル案：
+人気キャスト風の改善例：`,
     });
 
     const result = response.output_text;
@@ -66,7 +38,7 @@ ${diary}
     await supabase.from("scores").insert({
       diary,
       result,
-      type,
+      cast_name: castName,
     });
 
     return Response.json({
@@ -77,7 +49,7 @@ ${diary}
 
     return Response.json(
       {
-        result: "AI採点に失敗しました",
+        result: "エラーが発生しました",
       },
       { status: 500 }
     );
