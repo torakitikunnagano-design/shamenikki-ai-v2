@@ -52,3 +52,8 @@ ${diary}
     );
   }
 }
+export async function GET() {
+  return Response.json({
+    scores: [],
+  });
+}
