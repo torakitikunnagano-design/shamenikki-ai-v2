@@ -1,31 +1,33 @@
-function getParts(result: string) {
-  return {
-    score: result.match(/(\d+)点/)?.[1] || "--",
+async function handleScore() {
+  setLoading(true);
+  setResult("");
+  setSelected(null);
 
-    good:
-      result.match(
-        /【良いところ】([\s\S]*?)【改善/
-      )?.[1] || "",
+  try {
+    const res = await fetch("/api/score", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        diary,
+        type,
+      }),
+    });
 
-    improve:
-      result.match(
-        /【改善点】([\s\S]*?)【タイトル案】/
-      )?.[1] ||
+    const data = await res.json();
 
-      result.match(
-        /【改善ポイント】([\s\S]*?)【タイトル案】/
-      )?.[1] ||
+    console.log("API結果", data);
 
-      "",
+    setResult(data.result);
 
-    title:
-      result.match(
-        /【タイトル案】([\s\S]*?)【人気キャスト風改善例】/
-      )?.[1] || "",
+    await loadHistories();
 
-    rewrite:
-      result.match(
-        /【人気キャスト風改善例】([\s\S]*)/
-      )?.[1] || "",
-  };
+  } catch (error) {
+    console.error(error);
+
+    setResult("エラーが発生しました");
+  }
+
+  setLoading(false);
 }
