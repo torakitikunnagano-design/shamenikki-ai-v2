@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function getParts(result: string) {
   return {
@@ -30,6 +30,22 @@ export default function Home() {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState("彼女感型");
+  const [histories, setHistories] = useState<any[]>([]);
+
+  async function loadHistories() {
+    try {
+      const res = await fetch("/api/score");
+      const data = await res.json();
+
+      setHistories(data.scores || []);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    loadHistories();
+  }, []);
 
   async function handleScore() {
     setLoading(true);
@@ -48,9 +64,14 @@ export default function Home() {
       });
 
       const data = await res.json();
+
       setResult(data.result || "AI採点に失敗しました");
+
+      await loadHistories();
+
     } catch (error) {
       console.error(error);
+
       setResult("エラーが発生しました");
     }
 
@@ -69,7 +90,8 @@ export default function Home() {
         <h1 style={styles.title}>写メ日記AIスコアラー</h1>
 
         <p style={styles.text}>
-          AIが写メ日記を100点満点で採点し、改善点・タイトル案・人気キャスト風の改善例まで作成します。
+          AIが写メ日記を100点満点で採点し、
+          改善点・タイトル案・改善例まで作成します。
         </p>
 
         <div style={styles.typeArea}>
@@ -95,7 +117,11 @@ export default function Home() {
           style={styles.textarea}
         />
 
-        <button onClick={handleScore} disabled={loading} style={styles.button}>
+        <button
+          onClick={handleScore}
+          disabled={loading}
+          style={styles.button}
+        >
           {loading ? "AI採点中..." : "AI採点する"}
         </button>
 
@@ -103,28 +129,87 @@ export default function Home() {
           <div style={styles.resultArea}>
             <div style={styles.scoreBox}>
               <p style={styles.label}>総合スコア</p>
-              <p style={styles.score}>{parts.score}点</p>
+
+              <p style={styles.score}>
+                {parts.score}点
+              </p>
             </div>
 
             <div style={styles.grid}>
-              <ResultBox title="良いところ" content={parts.good} />
-              <ResultBox title="改善ポイント" content={parts.improve} />
+              <ResultBox
+                title="良いところ"
+                content={parts.good}
+              />
+
+              <ResultBox
+                title="改善ポイント"
+                content={parts.improve}
+              />
             </div>
 
-            <ResultBox title="タイトル案" content={parts.title} />
-            <ResultBox title="人気キャスト風 改善例" content={parts.rewrite} />
+            <ResultBox
+              title="タイトル案"
+              content={parts.title}
+            />
+
+            <ResultBox
+              title="人気キャスト風 改善例"
+              content={parts.rewrite}
+            />
           </div>
         )}
+
+        <div style={styles.historyArea}>
+          <h2 style={styles.historyTitle}>
+            過去の採点履歴
+          </h2>
+
+          {histories.map((item, index) => {
+            const past = getParts(item.result);
+
+            return (
+              <div
+                key={index}
+                style={styles.historyCard}
+              >
+                <div style={styles.historyScore}>
+                  {past.score}点
+                </div>
+
+                <div>
+                  <p style={styles.historyDiary}>
+                    {item.diary}
+                  </p>
+
+                  <p style={styles.historyDate}>
+                    {item.created_at}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
     </main>
   );
 }
 
-function ResultBox({ title, content }: { title: string; content: string }) {
+function ResultBox({
+  title,
+  content,
+}: {
+  title: string;
+  content: string;
+}) {
   return (
     <div style={styles.resultBox}>
-      <h2 style={styles.boxTitle}>{title}</h2>
-      <pre style={styles.pre}>{content}</pre>
+      <h2 style={styles.boxTitle}>
+        {title}
+      </h2>
+
+      <pre style={styles.pre}>
+        {content}
+      </pre>
     </div>
   );
 }
@@ -201,7 +286,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "18px",
     border: "none",
     borderRadius: "999px",
-    background: "linear-gradient(90deg, #f5c542, #ff7a00, #ff2d75)",
+    background:
+      "linear-gradient(90deg, #f5c542, #ff7a00, #ff2d75)",
     color: "#111",
     fontSize: "18px",
     fontWeight: "bold",
@@ -213,7 +299,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
 
   scoreBox: {
-    background: "linear-gradient(135deg, #2b2208, #111)",
+    background:
+      "linear-gradient(135deg, #2b2208, #111)",
     border: "1px solid #f5c542",
     borderRadius: "20px",
     padding: "24px",
@@ -234,7 +321,8 @@ const styles: { [key: string]: React.CSSProperties } = {
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gridTemplateColumns:
+      "repeat(auto-fit, minmax(260px, 1fr))",
     gap: "18px",
   },
 
@@ -256,5 +344,43 @@ const styles: { [key: string]: React.CSSProperties } = {
     lineHeight: "1.8",
     fontSize: "15px",
     fontFamily: "inherit",
+  },
+
+  historyArea: {
+    marginTop: "40px",
+  },
+
+  historyTitle: {
+    color: "#f5c542",
+    marginBottom: "20px",
+  },
+
+  historyCard: {
+    display: "flex",
+    gap: "20px",
+    alignItems: "center",
+    background: "#111",
+    border: "1px solid #333",
+    borderRadius: "16px",
+    padding: "16px",
+    marginBottom: "14px",
+  },
+
+  historyScore: {
+    fontSize: "32px",
+    fontWeight: "bold",
+    color: "#f5c542",
+    minWidth: "90px",
+  },
+
+  historyDiary: {
+    margin: 0,
+    lineHeight: "1.7",
+  },
+
+  historyDate: {
+    opacity: 0.6,
+    fontSize: "12px",
+    marginTop: "10px",
   },
 };
