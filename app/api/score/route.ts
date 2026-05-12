@@ -6,19 +6,32 @@ const client = new OpenAI({
 
 export async function POST(request: Request) {
   try {
-    const { diary } = await request.json();
+    const { diary, type } = await request.json();
 
     const response = await client.responses.create({
-      model: "gpt-5.2",
+      model: "gpt-4o-mini",
       input: `
-この写メ日記を100点満点で採点してください。
+あなたは写メ日記のプロ添削AIです。
 
-■ 必ずこの形式で返してください
+以下の写メ日記を100点満点で採点してください。
+タイプは「${type}」です。
 
-点数：
-良いところ：
-改善点：
-タイトル案：
+必ずこの形式で返してください。
+
+【総合スコア】
+80点
+
+【良いところ】
+・
+
+【改善点】
+・
+
+【タイトル案】
+・
+
+【人気キャスト風改善例】
+
 
 本文：
 ${diary}
@@ -28,10 +41,14 @@ ${diary}
     return Response.json({
       result: response.output_text,
     });
-
   } catch (error) {
-    return Response.json({
-      error: "AI採点に失敗しました"
-    });
+    console.error(error);
+
+    return Response.json(
+      {
+        result: "AI採点に失敗しました",
+      },
+      { status: 500 }
+    );
   }
 }
