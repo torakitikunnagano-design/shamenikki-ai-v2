@@ -247,64 +247,18 @@ export default function Home() {
           <button onClick={handleScore} disabled={loading} className="button">
             {loading ? "AI採点中..." : "AI採点する"}
           </button>
+          <div key={index} className="historyCard">
+  <div className="historyScore">{past.score}点</div>
 
-          {result && (
-            <div className="resultArea">
-              <div className="scoreBox">
-                <p className="label">総合スコア</p>
-                <p className="score">{parts.score}点</p>
-              </div>
+  <div>
+    <p className="text-sm text-yellow-400">
+      キャスト名：{item.cast_name || "未入力"}
+    </p>
 
-              <div className="grid">
-                <ResultBox title="良いところ" content={parts.good} />
-                <ResultBox title="改善ポイント" content={parts.improve} />
-              </div>
+    <p className="historyDiary">{item.diary}</p>
 
-              <ResultBox title="タイトル案" content={parts.title} />
-              <ResultBox title="人気キャスト風 改善例" content={parts.rewrite} />
-            </div>
-          )}
+    <p className="historyDate">{item.created_at}</p>
+  </div>
+</div>
 
-          <div className="historyArea">
-            <h2 className="historyTitle">過去の採点履歴</h2>
-
-            {histories.map((item, index) => {
-              const past = getParts(item.result);
-
-              return (
-                <div key={index} className="historyCard">
-                  <div className="historyScore">{past.score}点</div>
-
-                  <div>
-                    <p className="castName">
-                      {item.cast_name || "キャスト名なし"}
-                    </p>
-
-                    <p className="historyDiary">{item.diary}</p>
-
-                    <p className="historyDate">{item.created_at}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      </main>
-    </>
-  );
-}
-
-function ResultBox({
-  title,
-  content,
-}: {
-  title: string;
-  content: string;
-}) {
-  return (
-    <div className="resultBox">
-      <h2 className="boxTitle">{title}</h2>
-      <pre className="pre">{content}</pre>
-    </div>
-  );
-}
+     
