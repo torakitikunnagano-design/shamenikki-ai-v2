@@ -1,0 +1,22 @@
+{
+  "name": "shamenikki-ai-v2",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.105.4",
+    "next": "14.2.5",
+    "openai": "^6.37.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.40",
+    "@types/react": "^18.3.28",
+    "typescript": "^5.4.5"
+  }
+}
