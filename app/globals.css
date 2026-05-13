@@ -87,3 +87,49 @@ body {
   border-radius: 18px;
   padding: 20px;
 }
+.historySection {
+  margin-top: 40px;
+}
+
+.historyTitle {
+  color: #f5c542;
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.historyCard {
+  border: 1px solid #f5c542;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: #1a1a1a;
+}
+
+.historyScore {
+  font-size: 28px;
+  font-weight: bold;
+  color: #f5c542;
+  margin-bottom: 12px;
+}
+
+.castName {
+  color: #f5c542;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.historyDiary {
+  color: white;
+  margin-bottom: 8px;
+  line-height: 1.7;
+}
+
+.historyDate {
+  color: #999;
+  font-size: 12px;
+}
+
+.historyEmpty {
+  color: #999;
+}
