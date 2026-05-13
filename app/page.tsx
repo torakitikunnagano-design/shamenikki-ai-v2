@@ -22,7 +22,7 @@ export default function Home() {
   const [diary, setDiary] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+ const [history, setHistory] = useState<any[]>([]);
   const [type, setType] = useState("彼女感");
 
   useEffect(() => {
