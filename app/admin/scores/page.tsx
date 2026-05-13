@@ -66,10 +66,11 @@ export default async function ScoresPage() {
             <p
               style={{
                 color: "#00ff99",
+                fontSize: "28px",
                 fontWeight: "bold",
               }}
             >
-              {item.result}
+              {item.result.match(/(\d+)点/)?.[0] || "点数なし"}
             </p>
           </div>
         ))}
