@@ -24,6 +24,38 @@ body {
   padding: 24px;
   box-shadow: 0 0 30px rgba(201, 162, 39, 0.2);
 }
+.feelingGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.feelingBox {
+  border: 1px solid #333333;
+  border-radius: 18px;
+  padding: 14px;
+  text-align: center;
+  background: #1a1a1a;
+}
+
+.feelingLabel {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #cccccc;
+}
+
+.feelingScore {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .feelingGrid {
+    grid-template-columns: 1fr;
+  }
+}
 
 .title {
   color: #f5c542;
