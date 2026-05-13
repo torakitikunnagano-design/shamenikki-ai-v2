@@ -16,7 +16,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [type, setType] = useState("彼女感");
-
 async function loadHistory() {
   try {
     const res = await fetch("/api/his", {
@@ -30,6 +29,8 @@ async function loadHistory() {
     setHistory(data.history || []);
   } catch (error) {
     console.error(error);
+  }
+}
   }
 }
 
