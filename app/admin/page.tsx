@@ -1,18 +1,38 @@
 export default function AdminPage() {
+  const cards = [
+    {
+      title: "ランキング管理",
+      desc: "人気キャスト順位",
+    },
+    {
+      title: "店舗管理",
+      desc: "店舗データ編集",
+    },
+    {
+      title: "キャスト管理",
+      desc: "女の子情報管理",
+    },
+    {
+      title: "AI分析",
+      desc: "写メ日記AI分析",
+    },
+  ];
+
   return (
     <main
       style={{
         minHeight: "100vh",
-        background: "#0f0f0f",
+        background:
+          "linear-gradient(to bottom, #0f0f0f, #1a1a1a)",
         color: "white",
-        padding: "24px",
+        padding: "40px",
       }}
     >
       <h1
         style={{
-          fontSize: "32px",
+          fontSize: "40px",
           fontWeight: "bold",
-          marginBottom: "24px",
+          marginBottom: "40px",
         }}
       >
         管理画面
@@ -20,31 +40,42 @@ export default function AdminPage() {
 
       <div
         style={{
-          background: "#1a1a1a",
-          padding: "20px",
-          borderRadius: "16px",
-          marginBottom: "20px",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fit, minmax(240px, 1fr))",
+          gap: "20px",
         }}
       >
-        <h2 style={{ fontSize: "20px", marginBottom: "12px" }}>
-          写メ日記AI
-        </h2>
+        {cards.map((card) => (
+          <div
+            key={card.title}
+            style={{
+              background: "#1f1f1f",
+              padding: "24px",
+              borderRadius: "20px",
+              border: "1px solid #333",
+              boxShadow:
+                "0 0 20px rgba(0,0,0,0.4)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "24px",
+                marginBottom: "12px",
+              }}
+            >
+              {card.title}
+            </h2>
 
-        <p style={{ color: "#aaa" }}>
-          管理者専用ページ
-        </p>
-      </div>
-
-      <div
-        style={{
-          background: "#1a1a1a",
-          padding: "20px",
-          borderRadius: "16px",
-        }}
-      >
-        <p>・ランキング管理</p>
-        <p>・店舗管理</p>
-        <p>・キャスト管理</p>
+            <p
+              style={{
+                color: "#aaa",
+              }}
+            >
+              {card.desc}
+            </p>
+          </div>
+        ))}
       </div>
     </main>
   );
