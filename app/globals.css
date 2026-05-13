@@ -1,92 +1,141 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background: #111;
-  color: white;
+  background: #050505;
+  color: #ffffff;
   font-family: Arial, sans-serif;
 }
 
 .main {
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 40px 20px;
+  padding: 24px 12px;
+  background: linear-gradient(180deg, #050505 0%, #141006 100%);
 }
 
 .card {
-  width: 100%;
-  max-width: 900px;
-  background: #1b1b1b;
-  border: 2px solid #d4af37;
+  max-width: 760px;
+  margin: 0 auto;
+  background: #111111;
+  border: 1px solid #c9a227;
   border-radius: 24px;
-  padding: 30px;
-}
-
-.sub {
-  color: #d4af37;
-  font-size: 14px;
-  font-weight: bold;
+  padding: 24px;
+  box-shadow: 0 0 30px rgba(201, 162, 39, 0.2);
 }
 
 .title {
-  font-size: 54px;
-  margin-bottom: 10px;
+  color: #f5c542;
+  font-size: 30px;
+  text-align: center;
+  margin-bottom: 12px;
 }
 
-.input-box {
-  margin-top: 30px;
+.subtitle {
+  color: #cccccc;
+  text-align: center;
+  line-height: 1.7;
+  margin-bottom: 24px;
 }
 
-.input-box label {
+.label {
   display: block;
-  margin-bottom: 10px;
-  color: #ffd700;
+  color: #f5c542;
   font-weight: bold;
+  margin: 18px 0 8px;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  background: #050505;
+  color: #ffffff;
+  border: 1px solid #555555;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 16px;
 }
 
 .textarea {
-  width: 100%;
-  height: 240px;
-  background: #222;
-  color: white;
-  border: 1px solid #666;
-  border-radius: 16px;
-  padding: 20px;
-  font-size: 18px;
+  min-height: 180px;
+  resize: vertical;
+}
+
+.typeButtons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.typeButton {
+  border: 1px solid #f5c542;
+  border-radius: 999px;
+  padding: 10px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .button {
   width: 100%;
   margin-top: 20px;
-  padding: 18px;
+  padding: 16px;
   border: none;
   border-radius: 999px;
-  font-size: 22px;
+  background: linear-gradient(90deg, #f5c542, #b88900);
+  color: #111111;
+  font-size: 18px;
   font-weight: bold;
-  background: linear-gradient(90deg, #ffe600, #ff2d55);
   cursor: pointer;
 }
 
-.boxes {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-top: 24px;
+.button:disabled {
+  opacity: 0.6;
 }
 
-.box {
-  background: #2a2a2a;
-  border: 1px solid #555;
-  border-radius: 18px;
-  padding: 20px;
+.resultArea {
+  margin-top: 28px;
 }
 
-.result {
-  margin-top: 24px;
-  background: #2a2a2a;
-  border: 2px solid #d4af37;
-  border-radius: 18px;
+.scoreBox {
+  text-align: center;
+  border: 1px solid #f5c542;
+  border-radius: 20px;
   padding: 20px;
+  margin-bottom: 18px;
+  background: #1a1a1a;
 }
+
+.scoreLabel {
+  color: #cccccc;
+}
+
+.score {
+  color: #f5c542;
+  font-size: 48px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.resultBox {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.resultBox h3 {
+  color: #f5c542;
+  margin-top: 0;
+}
+
+.resultBox p {
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
 .historySection {
   margin-top: 40px;
 }
@@ -107,32 +156,16 @@ body {
 }
 
 .historyScore {
+  display: inline-block;
   font-size: 28px;
   font-weight: bold;
+  border: 1px solid #f5c542;
+  border-radius: 14px;
+  padding: 8px 14px;
   color: #f5c542;
   margin-bottom: 12px;
 }
 
-.castName {
-  color: #f5c542;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.historyDiary {
-  color: white;
-  margin-bottom: 8px;
-  line-height: 1.7;
-}
-
-.historyDate {
-  color: #999;
-  font-size: 12px;
-}
-
-.historyEmpty {
-  color: #999;
-}
 .scoreHigh {
   color: #ffd700;
   border-color: #ffd700;
@@ -149,4 +182,41 @@ body {
   color: #ff4d4d;
   border-color: #ff4d4d;
   box-shadow: 0 0 12px rgba(255, 77, 77, 0.35);
+}
+
+.castName {
+  color: #f5c542;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.historyDiary {
+  color: white;
+  margin-bottom: 8px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.historyDate {
+  color: #999999;
+  font-size: 12px;
+}
+
+.historyEmpty {
+  color: #999999;
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .score {
+    font-size: 40px;
+  }
 }
