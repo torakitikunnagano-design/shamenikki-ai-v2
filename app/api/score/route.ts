@@ -1,4 +1,6 @@
-input: `
+const response = await openai.responses.create({
+  model: "gpt-4o-mini",
+  input: `
 あなたは超一流の風俗店プロデューサーです。
 
 以下の写メ日記を分析して、
@@ -24,7 +26,6 @@ input: `
 ・彼女感型
 ・色恋型
 ・癒し型
-など分析
 
 【キャスト名】
 ${castName}
@@ -32,3 +33,4 @@ ${castName}
 【写メ日記】
 ${diary}
 `,
+});
