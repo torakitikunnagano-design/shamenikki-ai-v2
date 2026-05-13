@@ -183,7 +183,9 @@ export default function Home() {
 
           {history.map((item) => (
             <div key={item.id} className="historyCard">
-              <div className="historyScore">{getScore(item.result)}点</div>
+             <div className="historyScore">
+  AI採点
+</div>
 
               <div>
                 <p className="castName">
