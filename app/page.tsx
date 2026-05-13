@@ -22,6 +22,25 @@ const ngWords = [
   "来なくていい",
 ];
 
+const positiveWords = [
+  "ありがとう",
+  "嬉しい",
+  "楽しい",
+  "会える",
+  "楽しみ",
+  "優しい",
+  "癒し",
+  "幸せ",
+  "また",
+  "大好き",
+  "お兄さん",
+  "待ってる",
+  "ぬくぬく",
+  "ぎゅ",
+  "笑顔",
+  "ドキドキ",
+];
+
 export default function Home() {
   const [castName, setCastName] = useState("");
   const [diary, setDiary] = useState("");
@@ -152,28 +171,16 @@ ${diary}`,
   function getScoreClass(scoreText: string) {
     const score = Number(getScore(scoreText));
 
-    if (score >= 90) {
-      return "scoreHigh";
-    }
-
-    if (score >= 70) {
-      return "scoreMiddle";
-    }
-
+    if (score >= 90) return "scoreHigh";
+    if (score >= 70) return "scoreMiddle";
     return "scoreLow";
   }
 
   function getPointClass(score: string) {
     const num = Number(score);
 
-    if (num >= 90) {
-      return "scoreHigh";
-    }
-
-    if (num >= 70) {
-      return "scoreMiddle";
-    }
-
+    if (num >= 90) return "scoreHigh";
+    if (num >= 70) return "scoreMiddle";
     return "scoreLow";
   }
 
@@ -237,14 +244,46 @@ ${diary}`,
       date: item.created_at,
     }));
 
+  const wordRanking = positiveWords
+    .map((word) => {
+      const count = history.reduce((total, item) => {
+        const diaryText = item.diary || "";
+        const resultText = item.result || "";
+        const fullText = diaryText + resultText;
+
+        return fullText.includes(word) ? total + 1 : total;
+      }, 0);
+
+      return {
+        word,
+        count,
+      };
+    })
+    .filter((item) => item.count > 0)
+    .sort((a, b) => b.count - a.count);
+
+  const ngWordRanking = ngWords
+    .map((word) => {
+      const count = history.reduce((total, item) => {
+        const diaryText = item.diary || "";
+        return diaryText.includes(word) ? total + 1 : total;
+      }, 0);
+
+      return {
+        word,
+        count,
+      };
+    })
+    .filter((item) => item.count > 0)
+    .sort((a, b) => b.count - a.count);
+
   return (
     <main className="main">
       <section className="card">
         <h1 className="title">写メ日記 AIスコアラー</h1>
 
         <p className="subtitle">
-          写メ日記をAIが採点し、
-          改善点と人気キャスト風の例文を作ります。
+          写メ日記をAIが採点し、改善点と人気キャスト風の例文を作ります。
         </p>
 
         <label className="label">キャスト名</label>
@@ -385,6 +424,38 @@ ${diary}`,
               <p className="castName">{item.name}</p>
 
               <p className="historyDate">採点回数：{item.count}回</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="historySection">
+          <h2 className="historyTitle">人気ワード分析</h2>
+
+          {wordRanking.length === 0 && (
+            <p className="historyEmpty">まだ人気ワードがありません</p>
+          )}
+
+          {wordRanking.map((item, index) => (
+            <div key={item.word} className="wordCard">
+              <span className="wordRank">{index + 1}位</span>
+              <span className="wordText">{item.word}</span>
+              <span className="wordCount">{item.count}回</span>
+            </div>
+          ))}
+        </section>
+
+        <section className="historySection">
+          <h2 className="historyTitle">NGワード傾向</h2>
+
+          {ngWordRanking.length === 0 && (
+            <p className="historyEmpty">NGワード傾向はまだありません</p>
+          )}
+
+          {ngWordRanking.map((item, index) => (
+            <div key={item.word} className="wordCard ngWordCard">
+              <span className="wordRank">{index + 1}位</span>
+              <span className="wordText">{item.word}</span>
+              <span className="wordCount">{item.count}回</span>
             </div>
           ))}
         </section>
