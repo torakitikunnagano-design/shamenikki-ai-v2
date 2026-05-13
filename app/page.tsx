@@ -249,16 +249,22 @@ export default function Home() {
           </button>
           <div key={index} className="historyCard">
   <div className="historyScore">{past.score}点</div>
+{history.map((item, index) => (
+  <div key={index} className="historyCard">
+    <div className="historyScore">
+      {item.score || "85"}点
+    </div>
 
-  <div>
-    <p className="text-sm text-yellow-400">
-      キャスト名：{item.cast_name || "未入力"}
-    </p>
+    <div>
+      <p className="text-sm text-yellow-400">
+        キャスト名：{item.cast_name || "未入力"}
+      </p>
 
-    <p className="historyDiary">{item.diary}</p>
+      <p className="historyDiary">{item.diary}</p>
 
-    <p className="historyDate">{item.created_at}</p>
+      <p className="historyDate">{item.created_at}</p>
+    </div>
   </div>
-</div>
+))}
 
      
