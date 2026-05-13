@@ -1,6 +1,6 @@
 async function getScores() {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/api/scores`,
+    "https://shamenikki-ai-v2-aya8.vercel.app/api/scores",
     {
       cache: "no-store",
     }
