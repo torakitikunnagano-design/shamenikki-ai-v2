@@ -9,6 +9,19 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+const ngWords = [
+  "暇",
+  "ひま",
+  "誰でも",
+  "適当",
+  "だるい",
+  "疲れた",
+  "病んだ",
+  "最悪",
+  "めんどくさい",
+  "来なくていい",
+];
+
 export default function Home() {
   const [castName, setCastName] = useState("");
   const [diary, setDiary] = useState("");
@@ -16,6 +29,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [type, setType] = useState("彼女感");
+
+  const foundNgWords = ngWords.filter((word) =>
+    diary.includes(word)
+  );
 
   useEffect(() => {
     loadHistory();
@@ -177,6 +194,19 @@ export default function Home() {
           placeholder="ここに写メ日記本文を入力..."
         />
 
+        {foundNgWords.length > 0 && (
+          <div className="ngBox">
+            <p className="ngTitle">⚠ NGワード注意</p>
+            <p className="ngText">
+              見つかった言葉：
+              {foundNgWords.join(" / ")}
+            </p>
+            <p className="ngText">
+              印象が弱く見えたり、ネガティブに伝わる可能性があります。
+            </p>
+          </div>
+        )}
+
         <button className="button" onClick={handleScore} disabled={loading}>
           {loading ? "AI採点中..." : "AI採点する"}
         </button>
@@ -222,7 +252,11 @@ export default function Home() {
 
           {ranking.map((item: any, index: number) => (
             <div key={item.name} className="historyCard">
-              <div className={`historyScore ${getScoreClass(String(item.average) + "点")}`}>
+              <div
+                className={`historyScore ${getScoreClass(
+                  String(item.average) + "点"
+                )}`}
+              >
                 {index + 1}位　{item.average}点
               </div>
 
