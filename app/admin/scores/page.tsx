@@ -40,7 +40,12 @@ export default async function ScoresPage() {
         AI採点ランキング
       </h1>
 
-      <div style={{ display: "grid", gap: "20px" }}>
+      <div
+        style={{
+          display: "grid",
+          gap: "20px",
+        }}
+      >
         {sortedScores.map((item: any, index: number) => {
           const point = getPoint(item.result);
 
@@ -64,6 +69,16 @@ export default async function ScoresPage() {
                 }}
               >
                 第{index + 1}位
+              </p>
+
+              <p
+                style={{
+                  fontSize: "22px",
+                  fontWeight: "bold",
+                  marginBottom: "12px",
+                }}
+              >
+                {item.cast_name || "名前なし"}
               </p>
 
               <p
