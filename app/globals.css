@@ -271,3 +271,40 @@ body {
   margin: 6px 0;
   line-height: 1.6;
 }
+.growthBox {
+  margin-top: 18px;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.growthItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.growthLabel {
+  color: #f5c542;
+  font-weight: bold;
+  width: 24px;
+}
+
+.growthBarWrap {
+  flex: 1;
+  background: #050505;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #333333;
+}
+
+.growthBar {
+  min-width: 48px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-weight: bold;
+  text-align: right;
+}
+
