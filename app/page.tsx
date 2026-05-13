@@ -17,15 +17,21 @@ export default function Home() {
   const [history, setHistory] = useState<any[]>([]);
   const [type, setType] = useState("彼女感");
 
-  useEffect(() => {
-    loadHistory();
-  }, []);
+async function loadHistory() {
+  try {
+    const res = await fetch("/api/his", {
+      cache: "no-store",
+    });
 
-  async function loadHistory() {
-    try {
-      const res = await fetch("/api/his");
+    const data = await res.json();
 
-      const data = await res.json();
+    console.log(data);
+
+    setHistory(data.history || []);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
       setHistory(data.history || []);
     } catch (error) {
