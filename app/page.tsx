@@ -29,6 +29,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [type, setType] = useState("彼女感");
+  const [selectedCast, setSelectedCast] = useState("");
 
   const foundNgWords = ngWords.filter((word) => diary.includes(word));
 
@@ -86,7 +87,6 @@ export default function Home() {
 
   function getScore(text: string) {
     const match = text?.match(/(\d{1,3})点/);
-
     return match ? match[1] : "85";
   }
 
@@ -173,6 +173,23 @@ export default function Home() {
       count: item.count,
     }))
     .sort((a: any, b: any) => b.average - a.average);
+
+  const castNames = Array.from(
+    new Set(history.map((item) => item.cast_name || "未入力"))
+  );
+
+  const activeCast = selectedCast || castNames[0] || "";
+
+  const growthData = history
+    .filter((item) => (item.cast_name || "未入力") === activeCast)
+    .slice()
+    .reverse()
+    .slice(-10)
+    .map((item) => ({
+      id: item.id,
+      score: getScoreNumber(item.result),
+      date: item.created_at,
+    }));
 
   return (
     <main className="main">
@@ -308,6 +325,53 @@ export default function Home() {
               <p className="historyDate">採点回数：{item.count}回</p>
             </div>
           ))}
+        </section>
+
+        <section className="historySection">
+          <h2 className="historyTitle">キャスト別 成長グラフ</h2>
+
+          {castNames.length === 0 && (
+            <p className="historyEmpty">まだ成長データがありません</p>
+          )}
+
+          {castNames.length > 0 && (
+            <>
+              <label className="label">表示するキャスト</label>
+
+              <select
+                className="input"
+                value={activeCast}
+                onChange={(e) => setSelectedCast(e.target.value)}
+              >
+                {castNames.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+
+              <div className="growthBox">
+                {growthData.map((item, index) => (
+                  <div key={item.id} className="growthItem">
+                    <div className="growthLabel">{index + 1}</div>
+
+                    <div className="growthBarWrap">
+                      <div
+                        className={`growthBar ${getPointClass(
+                          String(item.score)
+                        )}`}
+                        style={{
+                          width: `${item.score}%`,
+                        }}
+                      >
+                        {item.score}点
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </section>
 
         <section className="historySection">
