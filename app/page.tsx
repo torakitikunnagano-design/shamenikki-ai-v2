@@ -30,19 +30,19 @@ export default function Home() {
   }, []);
 
   async function loadHistory() {
-    const { data, error } = await supabase
-      .from("scores")
-      .select("id, diary, result, created_at, cast_name")
-      .order("created_at", { ascending: false })
-      .limit(10);
+  const { data, error } = await supabase
+    .from("scores")
+    .select("*")
+    .order("id", { ascending: false })
+    .limit(10);
 
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setHistory(data || []);
+  if (error) {
+    console.error(error);
+    return;
   }
+
+  setHistory(data || []);
+}
 
   async function handleScore() {
     if (!diary.trim()) {
