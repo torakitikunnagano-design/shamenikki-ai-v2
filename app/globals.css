@@ -133,3 +133,20 @@ body {
 .historyEmpty {
   color: #999;
 }
+.scoreHigh {
+  color: #ffd700;
+  border-color: #ffd700;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.45);
+}
+
+.scoreMiddle {
+  color: #4db8ff;
+  border-color: #4db8ff;
+  box-shadow: 0 0 12px rgba(77, 184, 255, 0.35);
+}
+
+.scoreLow {
+  color: #ff4d4d;
+  border-color: #ff4d4d;
+  box-shadow: 0 0 12px rgba(255, 77, 77, 0.35);
+}
