@@ -49,6 +49,18 @@ export default function AdminPage() {
         {cards.map((card) => (
           <div
             key={card.title}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform =
+                "translateY(-6px)";
+              e.currentTarget.style.border =
+                "1px solid #666";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform =
+                "translateY(0px)";
+              e.currentTarget.style.border =
+                "1px solid #333";
+            }}
             style={{
               background: "#1f1f1f",
               padding: "24px",
@@ -56,6 +68,8 @@ export default function AdminPage() {
               border: "1px solid #333",
               boxShadow:
                 "0 0 20px rgba(0,0,0,0.4)",
+              transition: "0.3s",
+              cursor: "pointer",
             }}
           >
             <h2
