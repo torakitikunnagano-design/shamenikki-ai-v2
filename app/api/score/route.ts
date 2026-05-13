@@ -12,48 +12,25 @@ const supabase = createClient(
 
 export async function POST(request: Request) {
   try {
-    const { diary, castName, type } = await request.json();
+    const { castName, diary } = await request.json();
 
     const response = await openai.responses.create({
       model: "gpt-4o-mini",
-      input: `あなたは写メ日記の教育担当AIです。
-以下の写メ日記を、100点満点で採点してください。
+      input: `以下の写メ日記を100点満点で採点してください。
 
 【キャスト名】
-${castName || "未入力"}
+${castName}
 
-【選択タイプ】
-${type || "未選択"}
-
-【写メ日記本文】
-${diary}
-
-必ず以下の形式で返してください。
-
-点数：
-彼女感スコア：
-色恋感スコア：
-清楚感スコア：
-良い点：
-改善点：
-タイトル案：
-人気キャスト風の改善例：
-
-採点ルール：
-・点数は100点満点
-・彼女感スコア、色恋感スコア、清楚感スコアも100点満点
-・お客様が「また会いたい」と思うかを重視
-・文章の親しみやすさ、余韻、誘導力を見る
-・改善点は初心者にもわかりやすく
-・人気キャスト風の改善例は、そのまま写メ日記に使える文章にする`,
+【入力文】
+${diary}`,
     });
 
     const result = response.output_text;
 
     await supabase.from("scores").insert({
+      cast_name: castName,
       diary,
       result,
-      cast_name: castName,
     });
 
     return Response.json({
@@ -62,11 +39,8 @@ ${diary}
   } catch (error) {
     console.error(error);
 
-    return Response.json(
-      {
-        result: "エラーが発生しました",
-      },
-      { status: 500 }
-    );
+    return Response.json({
+      result: "エラーが発生しました",
+    });
   }
 }
