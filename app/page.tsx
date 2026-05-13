@@ -2,6 +2,30 @@
 
 import { useState } from "react";
 
+function pickSection(text: string, title: string) {
+  const start = text.indexOf(title);
+  if (start === -1) return "";
+
+  const nextTitles = [
+    "総合点",
+    "良い点",
+    "改善点",
+    "改善タイトル案",
+    "彼女感タイプ分析",
+  ];
+
+  let end = text.length;
+
+  for (const next of nextTitles) {
+    const nextIndex = text.indexOf(next, start + title.length);
+    if (nextIndex !== -1 && nextIndex < end) {
+      end = nextIndex;
+    }
+  }
+
+  return text.slice(start, end).trim();
+}
+
 export default function Home() {
   const [castName, setCastName] = useState("");
   const [diary, setDiary] = useState("");
@@ -22,6 +46,20 @@ export default function Home() {
     setResult(data.result);
     setLoading(false);
   }
+
+  const total = pickSection(result, "総合点");
+  const good = pickSection(result, "良い点");
+  const bad = pickSection(result, "改善点");
+  const titles = pickSection(result, "改善タイトル案");
+  const type = pickSection(result, "彼女感タイプ分析");
+
+  const sections = [
+    { label: "総合点", text: total },
+    { label: "良い点", text: good },
+    { label: "改善点", text: bad },
+    { label: "改善タイトル案", text: titles },
+    { label: "タイプ分析", text: type },
+  ];
 
   return (
     <main
@@ -109,18 +147,25 @@ export default function Home() {
         </div>
 
         {result && (
-          <div
-            style={{
-              marginTop: "24px",
-              padding: "22px",
-              borderRadius: "22px",
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(0,255,153,0.3)",
-              whiteSpace: "pre-wrap",
-              lineHeight: "1.8",
-            }}
-          >
-            {result}
+          <div style={{ marginTop: "24px", display: "grid", gap: "16px" }}>
+            {sections.map((section) => (
+              <div
+                key={section.label}
+                style={{
+                  padding: "20px",
+                  borderRadius: "20px",
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(0,255,153,0.25)",
+                  whiteSpace: "pre-wrap",
+                  lineHeight: "1.8",
+                }}
+              >
+                <h2 style={{ marginBottom: "10px", color: "#66ff99" }}>
+                  {section.label}
+                </h2>
+                <p>{section.text || "取得できませんでした"}</p>
+              </div>
+            ))}
           </div>
         )}
       </div>
