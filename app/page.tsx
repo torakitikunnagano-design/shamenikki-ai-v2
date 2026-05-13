@@ -27,6 +27,8 @@ export default function Home() {
   const [diary, setDiary] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const [titleLoading, setTitleLoading] = useState(false);
+  const [aiTitle, setAiTitle] = useState("");
   const [history, setHistory] = useState<any[]>([]);
   const [type, setType] = useState("彼女感");
   const [selectedCast, setSelectedCast] = useState("");
@@ -82,6 +84,50 @@ export default function Home() {
       alert("エラーが発生しました");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleTitleGenerate() {
+    if (!diary.trim()) {
+      alert("写メ日記本文を入力してください");
+      return;
+    }
+
+    setTitleLoading(true);
+    setAiTitle("");
+
+    try {
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          diary: `以下の写メ日記から、お客様がクリックしたくなるタイトルを5個だけ作ってください。
+
+【条件】
+・短く
+・可愛く
+・彼女感がある
+・絵文字は使いすぎない
+・番号付きで出す
+・本文の採点は不要
+
+【写メ日記】
+${diary}`,
+          castName,
+          type,
+        }),
+      });
+
+      const data = await res.json();
+
+      setAiTitle(data.result || "");
+    } catch (error) {
+      console.error(error);
+      alert("タイトル生成でエラーが発生しました");
+    } finally {
+      setTitleLoading(false);
     }
   }
 
@@ -247,6 +293,22 @@ export default function Home() {
             <p className="ngText">
               印象が弱く見えたり、ネガティブに伝わる可能性があります。
             </p>
+          </div>
+        )}
+
+        <button
+          className="button"
+          onClick={handleTitleGenerate}
+          disabled={titleLoading}
+          type="button"
+        >
+          {titleLoading ? "タイトル生成中..." : "タイトルだけAI生成"}
+        </button>
+
+        {aiTitle && (
+          <div className="resultBox">
+            <h3>AIタイトル案</h3>
+            <p>{aiTitle}</p>
           </div>
         )}
 
