@@ -1,16 +1,30 @@
+import Link from "next/link";
+
 export default function AdminPage() {
   const cards = [
-    { title: "ランキング管理", desc: "人気キャスト順位" },
-    { title: "店舗管理", desc: "店舗データ編集" },
-    { title: "キャスト管理", desc: "女の子情報管理" },
-    { title: "AI分析", desc: "写メ日記AI分析" },
+    {
+      title: "ランキング",
+      desc: "AI採点ランキング",
+      href: "/admin/scores",
+    },
+    {
+      title: "キャスト管理",
+      desc: "女の子情報管理",
+      href: "/admin/casts",
+    },
+    {
+      title: "AI分析",
+      desc: "写メ日記分析",
+      href: "/",
+    },
   ];
 
   return (
     <main
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(to bottom, #0f0f0f, #1a1a1a)",
+        background:
+          "linear-gradient(to bottom, #0f0f0f, #1a1a1a)",
         color: "white",
         padding: "40px",
       }}
@@ -28,39 +42,49 @@ export default function AdminPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gridTemplateColumns:
+            "repeat(auto-fit, minmax(240px, 1fr))",
           gap: "20px",
         }}
       >
         {cards.map((card) => (
-          <div
+          <Link
             key={card.title}
+            href={card.href}
             style={{
-              background: "#1f1f1f",
-              padding: "24px",
-              borderRadius: "20px",
-              border: "1px solid #333",
-              boxShadow: "0 0 20px rgba(0,0,0,0.4)",
-              cursor: "pointer",
+              textDecoration: "none",
+              color: "white",
             }}
           >
-            <h2
+            <div
               style={{
-                fontSize: "24px",
-                marginBottom: "12px",
+                background: "#1f1f1f",
+                padding: "24px",
+                borderRadius: "20px",
+                border: "1px solid #333",
+                boxShadow:
+                  "0 0 20px rgba(0,0,0,0.4)",
+                cursor: "pointer",
               }}
             >
-              {card.title}
-            </h2>
+              <h2
+                style={{
+                  fontSize: "24px",
+                  marginBottom: "12px",
+                }}
+              >
+                {card.title}
+              </h2>
 
-            <p
-              style={{
-                color: "#aaa",
-              }}
-            >
-              {card.desc}
-            </p>
-          </div>
+              <p
+                style={{
+                  color: "#aaa",
+                }}
+              >
+                {card.desc}
+              </p>
+            </div>
+          </Link>
         ))}
       </div>
     </main>
