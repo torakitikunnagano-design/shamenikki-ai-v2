@@ -9,8 +9,17 @@ async function getScores() {
   return res.json();
 }
 
+function getPoint(result: string) {
+  const match = result.match(/(\d+)点/);
+  return match ? Number(match[1]) : 0;
+}
+
 export default async function ScoresPage() {
   const scores = await getScores();
+
+  const sortedScores = scores.sort((a: any, b: any) => {
+    return getPoint(b.result) - getPoint(a.result);
+  });
 
   return (
     <main
@@ -28,52 +37,59 @@ export default async function ScoresPage() {
           marginBottom: "30px",
         }}
       >
-        AI採点履歴
+        AI採点ランキング
       </h1>
 
-      <div
-        style={{
-          display: "grid",
-          gap: "20px",
-        }}
-      >
-        {scores.map((item: any, index: number) => (
-          <div
-            key={index}
-            style={{
-              background: "#1f1f1f",
-              padding: "24px",
-              borderRadius: "20px",
-            }}
-          >
-            <p
-              style={{
-                marginBottom: "12px",
-                color: "#aaa",
-              }}
-            >
-              写メ日記
-            </p>
+      <div style={{ display: "grid", gap: "20px" }}>
+        {sortedScores.map((item: any, index: number) => {
+          const point = getPoint(item.result);
 
-            <p
+          return (
+            <div
+              key={index}
               style={{
-                marginBottom: "20px",
+                background: "#1f1f1f",
+                padding: "24px",
+                borderRadius: "20px",
+                border:
+                  index === 0
+                    ? "1px solid #00ff99"
+                    : "1px solid #333",
               }}
             >
-              {item.diary}
-            </p>
+              <p
+                style={{
+                  color: "#aaa",
+                  marginBottom: "10px",
+                }}
+              >
+                第{index + 1}位
+              </p>
 
-            <p
-              style={{
-                color: "#00ff99",
-                fontSize: "28px",
-                fontWeight: "bold",
-              }}
-            >
-              {item.result.match(/(\d+)点/)?.[0] || "点数なし"}
-            </p>
-          </div>
-        ))}
+              <p
+                style={{
+                  color: "#00ff99",
+                  fontSize: "32px",
+                  fontWeight: "bold",
+                  marginBottom: "20px",
+                }}
+              >
+                {point}点
+              </p>
+
+              <p
+                style={{
+                  color: "#aaa",
+                  marginBottom: "12px",
+                }}
+              >
+                写メ日記
+              </p>
+
+              <p>{item.diary}</p>
+            </div>
+          );
+        })}
       </div>
     </main>
   );
