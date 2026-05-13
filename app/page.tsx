@@ -30,9 +30,7 @@ export default function Home() {
   const [history, setHistory] = useState<any[]>([]);
   const [type, setType] = useState("彼女感");
 
-  const foundNgWords = ngWords.filter((word) =>
-    diary.includes(word)
-  );
+  const foundNgWords = ngWords.filter((word) => diary.includes(word));
 
   useEffect(() => {
     loadHistory();
@@ -92,6 +90,15 @@ export default function Home() {
     return match ? match[1] : "85";
   }
 
+  function getNamedScore(text: string, label: string) {
+    if (!text) return "0";
+
+    const regex = new RegExp(`${label}[：:]\\s*(\\d{1,3})`);
+    const match = text.match(regex);
+
+    return match ? match[1] : "0";
+  }
+
   function getScoreNumber(text: string) {
     return Number(getScore(text));
   }
@@ -110,6 +117,20 @@ export default function Home() {
     return "scoreLow";
   }
 
+  function getPointClass(score: string) {
+    const num = Number(score);
+
+    if (num >= 90) {
+      return "scoreHigh";
+    }
+
+    if (num >= 70) {
+      return "scoreMiddle";
+    }
+
+    return "scoreLow";
+  }
+
   function getSection(text: string, label: string) {
     if (!text) return "";
 
@@ -122,6 +143,10 @@ export default function Home() {
 
     return match ? match[1].trim() : "";
   }
+
+  const girlfriendScore = getNamedScore(result, "彼女感スコア");
+  const loveScore = getNamedScore(result, "色恋感スコア");
+  const cleanScore = getNamedScore(result, "清楚感スコア");
 
   const ranking = Object.values(
     history.reduce((acc: any, item: any) => {
@@ -197,10 +222,11 @@ export default function Home() {
         {foundNgWords.length > 0 && (
           <div className="ngBox">
             <p className="ngTitle">⚠ NGワード注意</p>
+
             <p className="ngText">
-              見つかった言葉：
-              {foundNgWords.join(" / ")}
+              見つかった言葉：{foundNgWords.join(" / ")}
             </p>
+
             <p className="ngText">
               印象が弱く見えたり、ネガティブに伝わる可能性があります。
             </p>
@@ -219,6 +245,23 @@ export default function Home() {
               <p className={`score ${getScoreClass(result)}`}>
                 {getScore(result)}点
               </p>
+            </div>
+
+            <div className="feelingGrid">
+              <div className={`feelingBox ${getPointClass(girlfriendScore)}`}>
+                <p className="feelingLabel">彼女感</p>
+                <p className="feelingScore">{girlfriendScore}点</p>
+              </div>
+
+              <div className={`feelingBox ${getPointClass(loveScore)}`}>
+                <p className="feelingLabel">色恋感</p>
+                <p className="feelingScore">{loveScore}点</p>
+              </div>
+
+              <div className={`feelingBox ${getPointClass(cleanScore)}`}>
+                <p className="feelingLabel">清楚感</p>
+                <p className="feelingScore">{cleanScore}点</p>
+              </div>
             </div>
 
             <div className="resultBox">
@@ -262,9 +305,7 @@ export default function Home() {
 
               <p className="castName">{item.name}</p>
 
-              <p className="historyDate">
-                採点回数：{item.count}回
-              </p>
+              <p className="historyDate">採点回数：{item.count}回</p>
             </div>
           ))}
         </section>
