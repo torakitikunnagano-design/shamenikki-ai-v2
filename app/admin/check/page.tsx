@@ -9,8 +9,20 @@ async function getScores() {
   return res.json();
 }
 
+async function getSettings() {
+  const res = await fetch(
+    "https://shamenikki-ai-v2-aya8.vercel.app/api/settings",
+    {
+      cache: "no-store",
+    }
+  );
+
+  return res.json();
+}
+
 export default async function CheckPage() {
   const scores = await getScores();
+  const settings = await getSettings();
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -19,6 +31,8 @@ export default async function CheckPage() {
   });
 
   const count = todayPosts.length;
+
+  const goal = settings?.daily_post_goal || 5;
 
   return (
     <main
@@ -44,7 +58,7 @@ export default async function CheckPage() {
           padding: "24px",
           borderRadius: "20px",
           border:
-            count >= 5
+            count >= goal
               ? "1px solid #00ff99"
               : "1px solid #ffcc00",
         }}
@@ -63,7 +77,7 @@ export default async function CheckPage() {
             fontSize: "48px",
             fontWeight: "bold",
             color:
-              count >= 5
+              count >= goal
                 ? "#00ff99"
                 : "#ffcc00",
           }}
@@ -77,9 +91,18 @@ export default async function CheckPage() {
             color: "#aaa",
           }}
         >
-          {count >= 5
+          目標：{goal}件
+        </p>
+
+        <p
+          style={{
+            marginTop: "8px",
+            color: "#aaa",
+          }}
+        >
+          {count >= goal
             ? "投稿条件達成"
-            : `目標まであと ${5 - count} 件`}
+            : `目標まであと ${goal - count} 件`}
         </p>
       </div>
     </main>
