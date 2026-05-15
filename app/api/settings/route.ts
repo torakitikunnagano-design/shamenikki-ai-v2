@@ -6,17 +6,43 @@ const supabase = createClient(
 );
 
 export async function GET() {
-  const { data, error } = await supabase
-    .from("shop_settings")
+  const { data } = await supabase
+    .from("settings")
     .select("*")
     .limit(1)
     .single();
 
-  if (error) {
-    return Response.json({
-      error: error.message,
+  return Response.json(data);
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+
+  const { daily_post_goal, repeat_limit_minutes } =
+    body;
+
+  const { data: existing } = await supabase
+    .from("settings")
+    .select("*")
+    .limit(1)
+    .single();
+
+  if (existing) {
+    await supabase
+      .from("settings")
+      .update({
+        daily_post_goal,
+        repeat_limit_minutes,
+      })
+      .eq("id", existing.id);
+  } else {
+    await supabase.from("settings").insert({
+      daily_post_goal,
+      repeat_limit_minutes,
     });
   }
 
-  return Response.json(data);
+  return Response.json({
+    success: true,
+  });
 }
