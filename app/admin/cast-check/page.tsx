@@ -61,6 +61,12 @@ export default async function CastCheckPage() {
   const limitMinutes =
     settings?.repeat_limit_min || 60;
 
+  const minTextLength =
+    settings?.min_text_length || 100;
+
+  const imageRequired =
+    settings?.image_required === true;
+
   const today = new Date().toLocaleDateString(
     "sv-SE",
     {
@@ -96,11 +102,33 @@ export default async function CastCheckPage() {
       limitMinutes
     );
 
+    const latestPost = posts[posts.length - 1];
+
+    const textLength =
+      latestPost?.diary?.length || 0;
+
+    const hasEnoughText =
+      textLength >= minTextLength;
+
+    const hasImage =
+      latestPost?.has_image === true;
+
+    const imageCheck =
+      imageRequired ? hasImage : true;
+
+    const isGuaranteeOk =
+      hasEnoughText &&
+      imageCheck &&
+      validCount >= goal;
+
     return {
       castName,
       rawCount,
       validCount,
-      achieved: validCount >= goal,
+      textLength,
+      hasEnoughText,
+      hasImage,
+      isGuaranteeOk,
     };
   });
 
@@ -119,19 +147,8 @@ export default async function CastCheckPage() {
           marginBottom: "30px",
         }}
       >
-        キャスト別 投稿達成管理
+        保証条件管理
       </h1>
-
-      <p
-        style={{
-          color: "#aaa",
-          marginBottom: "20px",
-        }}
-      >
-        目標：{goal}件 /
-        連投除外：{limitMinutes}
-        分以内は1件扱い
-      </p>
 
       <div
         style={{
@@ -144,46 +161,70 @@ export default async function CastCheckPage() {
             key={row.castName}
             style={{
               background: "#1f1f1f",
-              padding: "20px",
+              padding: "24px",
               borderRadius: "16px",
-              border: row.achieved
+              border: row.isGuaranteeOk
                 ? "1px solid #00ff99"
-                : "1px solid #ffcc00",
+                : "1px solid #ff4444",
               display: "grid",
-              gap: "8px",
+              gap: "10px",
             }}
           >
-            <h2
-              style={{
-                fontSize: "24px",
-              }}
-            >
-              {row.castName}
-            </h2>
+            <h2>{row.castName}</h2>
 
             <p>
-              有効投稿：
+              投稿数：
               {row.validCount}件
             </p>
 
-            <p style={{ color: "#aaa" }}>
-              実投稿：
-              {row.rawCount}件
+            <p>
+              文字数：
+              {row.textLength}文字
+            </p>
+
+            <p>
+              画像：
+              {row.hasImage
+                ? "あり"
+                : "なし"}
+            </p>
+
+            <p
+              style={{
+                color: row.hasEnoughText
+                  ? "#00ff99"
+                  : "#ff4444",
+              }}
+            >
+              {row.hasEnoughText
+                ? "文字数達成"
+                : "文字数不足"}
+            </p>
+
+            <p
+              style={{
+                color: row.hasImage
+                  ? "#00ff99"
+                  : "#ff4444",
+              }}
+            >
+              {row.hasImage
+                ? "画像達成"
+                : "画像不足"}
             </p>
 
             <p
               style={{
                 fontWeight: "bold",
-                color: row.achieved
+                fontSize: "20px",
+                color: row.isGuaranteeOk
                   ? "#00ff99"
-                  : "#ffcc00",
+                  : "#ff4444",
               }}
             >
-              {row.achieved
-                ? "投稿条件達成"
-                : `未達成：あと ${
-                    goal - row.validCount
-                  } 件`}
+              {row.isGuaranteeOk
+                ? "保証条件達成"
+                : "保証条件未達"}
             </p>
           </div>
         ))}
