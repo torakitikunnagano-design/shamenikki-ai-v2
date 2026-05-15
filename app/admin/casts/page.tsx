@@ -1,4 +1,17 @@
-export default function CastsPage() {
+async function getCasts() {
+  const res = await fetch(
+    "https://shamenikki-ai-v2-aya8.vercel.app/api/casts",
+    {
+      cache: "no-store",
+    }
+  );
+
+  return res.json();
+}
+
+export default async function CastsPage() {
+  const casts = await getCasts();
+
   return (
     <main
       style={{
@@ -11,7 +24,6 @@ export default function CastsPage() {
       <h1
         style={{
           fontSize: "40px",
-          fontWeight: "bold",
           marginBottom: "30px",
         }}
       >
@@ -20,25 +32,37 @@ export default function CastsPage() {
 
       <div
         style={{
-          background: "#1f1f1f",
-          padding: "24px",
-          borderRadius: "20px",
-          marginBottom: "20px",
+          display: "grid",
+          gap: "16px",
         }}
       >
-        <h2>なな</h2>
-        <p>写メ日記スコア：92点</p>
-      </div>
+        {casts.map((cast: any) => (
+          <div
+            key={cast.name}
+            style={{
+              background: "#1f1f1f",
+              padding: "20px",
+              borderRadius: "16px",
+              border: cast.is_active
+                ? "1px solid #00ff99"
+                : "1px solid #666",
+            }}
+          >
+            <h2>{cast.name}</h2>
 
-      <div
-        style={{
-          background: "#1f1f1f",
-          padding: "24px",
-          borderRadius: "20px",
-        }}
-      >
-        <h2>りお</h2>
-        <p>写メ日記スコア：88点</p>
+            <p
+              style={{
+                color: cast.is_active
+                  ? "#00ff99"
+                  : "#999",
+              }}
+            >
+              {cast.is_active
+                ? "在籍中"
+                : "停止中"}
+            </p>
+          </div>
+        ))}
       </div>
     </main>
   );
