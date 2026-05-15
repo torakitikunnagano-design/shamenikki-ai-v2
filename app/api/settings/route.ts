@@ -18,8 +18,7 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = await request.json();
 
-  const { daily_post_goal, repeat_limit_minutes } =
-    body;
+  const { daily_post_goal, repeat_limit_min } = body;
 
   const { data: existing } = await supabase
     .from("settings")
@@ -32,13 +31,13 @@ export async function POST(request: Request) {
       .from("settings")
       .update({
         daily_post_goal,
-        repeat_limit_minutes,
+        repeat_limit_min,
       })
       .eq("id", existing.id);
   } else {
     await supabase.from("settings").insert({
       daily_post_goal,
-      repeat_limit_minutes,
+      repeat_limit_min,
     });
   }
 
