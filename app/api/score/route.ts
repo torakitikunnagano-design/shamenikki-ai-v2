@@ -14,6 +14,12 @@ export async function POST(request: Request) {
   try {
     const { castName, diary } = await request.json();
 
+    if (!diary) {
+      return Response.json({
+        result: "写メ日記本文を入力してください",
+      });
+    }
+
     const response = await openai.responses.create({
       model: "gpt-4o-mini",
       input: `
@@ -44,7 +50,7 @@ export async function POST(request: Request) {
 ・癒し型
 
 【キャスト名】
-${castName}
+${castName || "未設定"}
 
 【写メ日記】
 ${diary}
@@ -53,20 +59,28 @@ ${diary}
 
     const result = response.output_text;
 
-    await supabase.from("scores").insert({
-      cast_name: castName,
+    const { error } = await supabase.from("scores").insert({
+      cast_name: castName || "未設定",
       diary,
       result,
     });
 
+    if (error) {
+      console.error(error);
+
+      return Response.json({
+        result: `Supabase保存エラー：${error.message}`,
+      });
+    }
+
     return Response.json({
       result,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
 
     return Response.json({
-      result: "エラーが発生しました",
+      result: `エラーが発生しました：${error.message}`,
     });
   }
 }
