@@ -10,20 +10,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-function timeToMinutes(time: string) {
-  const [h, m] = time.split(":").map(Number);
-  return h * 60 + m;
-}
-
 export async function POST(request: Request) {
   try {
-    const {
-      castName,
-      diary,
-      hasImage,
-      workStart,
-      workEnd,
-    } = await request.json();
+    const { castName, diary, hasImage, workStart, workEnd } =
+      await request.json();
 
     if (!diary) {
       return Response.json({
@@ -37,50 +27,14 @@ export async function POST(request: Request) {
       .limit(1)
       .single();
 
-    const minTextLength =
-      settings?.min_text_length || 100;
-
-    const imageRequired =
-      settings?.image_required === true;
-
-    const beforeWorkMin =
-      settings?.before_work_min || 60;
-
-    const afterWorkMin =
-      settings?.after_work_min || 60;
+    const minTextLength = settings?.min_text_length || 100;
+    const imageRequired = settings?.image_required === true;
+    const beforeWorkMin = settings?.before_work_min || 60;
+    const afterWorkMin = settings?.after_work_min || 60;
 
     const textLength = diary.length;
-
-    const isTextShort =
-      textLength < minTextLength;
-
-    const isImageMissing =
-      imageRequired && !hasImage;
-
-    const now = new Date();
-
-    const currentMinutes =
-      now.getHours() * 60 + now.getMinutes();
-
-    const startMinutes = workStart
-      ? timeToMinutes(workStart)
-      : null;
-
-    const endMinutes = workEnd
-      ? timeToMinutes(workEnd)
-      : null;
-
-    const beforeWorkCheck =
-      startMinutes !== null
-        ? currentMinutes <=
-          startMinutes - beforeWorkMin
-        : false;
-
-    const afterWorkCheck =
-      endMinutes !== null
-        ? currentMinutes >=
-          endMinutes - afterWorkMin
-        : false;
+    const isTextShort = textLength < minTextLength;
+    const isImageMissing = imageRequired && !hasImage;
 
     const response = await openai.responses.create({
       model: "gpt-4o-mini",
@@ -98,25 +52,17 @@ export async function POST(request: Request) {
 画像あり：${hasImage ? "あり" : "なし"}
 画像不足：${isImageMissing ? "あり" : "なし"}
 
-出勤前投稿条件：
-${beforeWorkMin}分前までに投稿
+出勤前投稿ルール：出勤${beforeWorkMin}分前まで
+退勤後投稿ルール：退勤${afterWorkMin}分前後
 
-出勤前投稿判定：
-${beforeWorkCheck ? "達成" : "未達"}
-
-退勤後投稿条件：
-${afterWorkMin}分前後で投稿
-
-退勤後投稿判定：
-${afterWorkCheck ? "達成" : "未達"}
+出勤時間：${workStart || "未入力"}
+退勤時間：${workEnd || "未入力"}
 
 文字数不足がある場合は、
-「保証対象外の可能性があります」
-と改善点に入れてください。
+「保証対象外の可能性があります」と改善点に入れてください。
 
 画像不足がある場合は、
-「画像不足のため保証条件未達の可能性があります」
-と改善点に入れてください。
+「画像不足のため保証条件未達の可能性があります」と改善点に入れてください。
 
 必ず下記フォーマットで返答してください。
 
@@ -128,9 +74,10 @@ ${afterWorkCheck ? "達成" : "未達"}
 ・文字数：○○文字
 ・最低文字数：○○文字
 ・文字数判定：達成 / 文字数不足
+・画像必須：あり / なし
 ・画像判定：達成 / 画像不足
-・出勤前投稿：達成 / 未達
-・退勤後投稿：達成 / 未達
+・出勤時間：○○
+・退勤時間：○○
 
 良い点
 ・
@@ -159,13 +106,15 @@ ${diary}
 
     const result = response.output_text;
 
-    const { error } = await supabase
-      .from("scores")
-      .insert({
-        cast_name: castName || "未設定",
-        diary,
-        result,
-      });
+    const { error } = await supabase.from("scores").insert({
+      cast_name: castName || "未設定",
+      diary,
+      result,
+      posted_at: new Date().toISOString(),
+      work_start: workStart || null,
+      work_end: workEnd || null,
+      has_image: hasImage === true,
+    });
 
     if (error) {
       return Response.json({
