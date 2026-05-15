@@ -9,6 +9,7 @@ function pickSection(text: string, title: string) {
   const nextTitles = [
     "総合点",
     "保証条件チェック",
+    "保証改善提案",
     "良い点",
     "改善点",
     "改善タイトル案",
@@ -29,8 +30,6 @@ export default function Home() {
   const [castName, setCastName] = useState("");
   const [diary, setDiary] = useState("");
   const [hasImage, setHasImage] = useState(false);
-  const [workStart, setWorkStart] = useState("");
-  const [workEnd, setWorkEnd] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -45,8 +44,6 @@ export default function Home() {
         castName,
         diary,
         hasImage,
-        workStart,
-        workEnd,
       }),
     });
 
@@ -58,6 +55,7 @@ export default function Home() {
   const sections = [
     { label: "総合点", text: pickSection(result, "総合点") },
     { label: "保証条件チェック", text: pickSection(result, "保証条件チェック") },
+    { label: "保証改善提案", text: pickSection(result, "保証改善提案") },
     { label: "良い点", text: pickSection(result, "良い点") },
     { label: "改善点", text: pickSection(result, "改善点") },
     { label: "改善タイトル案", text: pickSection(result, "改善タイトル案") },
@@ -84,7 +82,8 @@ export default function Home() {
         </h1>
 
         <p style={{ color: "#aaa", marginBottom: "28px" }}>
-          キャスト名・本文・画像有無・出勤時間を入力すると、AIが保証条件と改善点を分析します。
+          キャスト名・本文・画像有無を入力すると、AIが保証条件と改善点を分析します。
+          投稿時間はサーバー側で自動記録されます。
         </p>
 
         <div
@@ -102,22 +101,6 @@ export default function Home() {
             placeholder="キャスト名"
             style={inputStyle}
           />
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            <input
-              type="time"
-              value={workStart}
-              onChange={(e) => setWorkStart(e.target.value)}
-              style={inputStyle}
-            />
-
-            <input
-              type="time"
-              value={workEnd}
-              onChange={(e) => setWorkEnd(e.target.value)}
-              style={inputStyle}
-            />
-          </div>
 
           <textarea
             value={diary}
