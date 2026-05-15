@@ -8,6 +8,7 @@ function pickSection(text: string, title: string) {
 
   const nextTitles = [
     "総合点",
+    "保証条件チェック",
     "良い点",
     "改善点",
     "改善タイトル案",
@@ -29,6 +30,7 @@ function pickSection(text: string, title: string) {
 export default function Home() {
   const [castName, setCastName] = useState("");
   const [diary, setDiary] = useState("");
+  const [hasImage, setHasImage] = useState(false);
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -39,7 +41,7 @@ export default function Home() {
     const res = await fetch("/api/score", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ castName, diary }),
+      body: JSON.stringify({ castName, diary, hasImage }),
     });
 
     const data = await res.json();
@@ -48,6 +50,7 @@ export default function Home() {
   }
 
   const total = pickSection(result, "総合点");
+  const guarantee = pickSection(result, "保証条件チェック");
   const good = pickSection(result, "良い点");
   const bad = pickSection(result, "改善点");
   const titles = pickSection(result, "改善タイトル案");
@@ -55,6 +58,7 @@ export default function Home() {
 
   const sections = [
     { label: "総合点", text: total },
+    { label: "保証条件チェック", text: guarantee },
     { label: "良い点", text: good },
     { label: "改善点", text: bad },
     { label: "改善タイトル案", text: titles },
@@ -81,7 +85,7 @@ export default function Home() {
         </h1>
 
         <p style={{ color: "#aaa", marginBottom: "28px" }}>
-          キャスト名と写メ日記を入力すると、AIが点数と改善点を分析します。
+          キャスト名・本文・画像有無を入力すると、AIが保証条件と改善点を分析します。
         </p>
 
         <div
@@ -124,6 +128,24 @@ export default function Home() {
               color: "white",
             }}
           />
+
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                color: "#aaa",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={hasImage}
+                onChange={(e) => setHasImage(e.target.checked)}
+              />
+              画像あり
+            </label>
+          </div>
 
           <button
             onClick={handleScore}
