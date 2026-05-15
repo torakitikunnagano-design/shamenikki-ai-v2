@@ -33,6 +33,7 @@ export async function POST(request: Request) {
     const afterWorkMin = settings?.after_work_min || 60;
 
     const textLength = diary.length;
+    const shortageText = Math.max(minTextLength - textLength, 0);
     const isTextShort = textLength < minTextLength;
     const isImageMissing = imageRequired && !hasImage;
 
@@ -42,10 +43,12 @@ export async function POST(request: Request) {
 あなたは超一流の風俗店プロデューサーです。
 
 以下の写メ日記を分析してください。
+目的は「保証条件を守りながら、女の子が無理なく投稿品質を上げること」です。
 
 【保証条件】
 最低文字数：${minTextLength}文字
 今回の文字数：${textLength}文字
+不足文字数：${shortageText}文字
 文字数不足：${isTextShort ? "あり" : "なし"}
 
 画像必須：${imageRequired ? "あり" : "なし"}
@@ -58,26 +61,31 @@ export async function POST(request: Request) {
 出勤時間：${workStart || "未入力"}
 退勤時間：${workEnd || "未入力"}
 
-文字数不足がある場合は、
-「保証対象外の可能性があります」と改善点に入れてください。
-
-画像不足がある場合は、
-「画像不足のため保証条件未達の可能性があります」と改善点に入れてください。
+【重要ルール】
+・文字数不足がある場合は「保証対象外の可能性があります」と必ず書く
+・画像不足がある場合は「画像不足のため保証条件未達の可能性があります」と必ず書く
+・「短文でもOK」「1本だけでもOK」のように保証条件を軽く扱う表現は禁止
+・女の子を責めず、スタッフがそのまま伝えられる優しい表現にする
+・保証改善提案では、保証達成に必要な具体的行動を出す
 
 必ず下記フォーマットで返答してください。
-
-【返答フォーマット】
 
 総合点：○○点
 
 保証条件チェック
 ・文字数：○○文字
 ・最低文字数：○○文字
+・不足文字数：○○文字
 ・文字数判定：達成 / 文字数不足
 ・画像必須：あり / なし
 ・画像判定：達成 / 画像不足
 ・出勤時間：○○
 ・退勤時間：○○
+
+保証改善提案
+・文字数不足の場合：自然に追記できる文章案を1〜2個出す
+・画像不足の場合：追加すべき画像の内容を提案する
+・保証条件にひっかかる場合：何を直せば保証達成に近づくかを書く
 
 良い点
 ・
