@@ -12,7 +12,7 @@ const supabase = createClient(
 
 export async function POST(request: Request) {
   try {
-    const { castName, diary } = await request.json();
+    const { castName, diary, hasImage } = await request.json();
 
     if (!diary) {
       return Response.json({
@@ -27,8 +27,11 @@ export async function POST(request: Request) {
       .single();
 
     const minTextLength = settings?.min_text_length || 100;
+    const imageRequired = settings?.image_required === true;
+
     const textLength = diary.length;
     const isTextShort = textLength < minTextLength;
+    const isImageMissing = imageRequired && !hasImage;
 
     const response = await openai.responses.create({
       model: "gpt-4o-mini",
@@ -37,15 +40,20 @@ export async function POST(request: Request) {
 
 以下の写メ日記を分析してください。
 
-ただし、保証条件として最低文字数があります。
-
 【保証条件】
 最低文字数：${minTextLength}文字
 今回の文字数：${textLength}文字
 文字数不足：${isTextShort ? "あり" : "なし"}
 
+画像必須：${imageRequired ? "あり" : "なし"}
+画像あり：${hasImage ? "あり" : "なし"}
+画像不足：${isImageMissing ? "あり" : "なし"}
+
 文字数不足がある場合は、
 「保証対象外の可能性があります」と必ず改善点に入れてください。
+
+画像不足がある場合は、
+「画像がないため保証対象外の可能性があります」と必ず改善点に入れてください。
 
 必ず下記フォーマットで返答してください。
 
@@ -56,7 +64,9 @@ export async function POST(request: Request) {
 保証条件チェック
 ・文字数：○○文字
 ・最低文字数：○○文字
-・判定：達成 / 文字数不足
+・文字数判定：達成 / 文字数不足
+・画像必須：あり / なし
+・画像判定：達成 / 画像不足
 
 良い点
 ・
