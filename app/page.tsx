@@ -19,9 +19,7 @@ function pickSection(text: string, title: string) {
 
   for (const next of nextTitles) {
     const nextIndex = text.indexOf(next, start + title.length);
-    if (nextIndex !== -1 && nextIndex < end) {
-      end = nextIndex;
-    }
+    if (nextIndex !== -1 && nextIndex < end) end = nextIndex;
   }
 
   return text.slice(start, end).trim();
@@ -31,6 +29,8 @@ export default function Home() {
   const [castName, setCastName] = useState("");
   const [diary, setDiary] = useState("");
   const [hasImage, setHasImage] = useState(false);
+  const [workStart, setWorkStart] = useState("");
+  const [workEnd, setWorkEnd] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +41,13 @@ export default function Home() {
     const res = await fetch("/api/score", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ castName, diary, hasImage }),
+      body: JSON.stringify({
+        castName,
+        diary,
+        hasImage,
+        workStart,
+        workEnd,
+      }),
     });
 
     const data = await res.json();
@@ -49,20 +55,13 @@ export default function Home() {
     setLoading(false);
   }
 
-  const total = pickSection(result, "総合点");
-  const guarantee = pickSection(result, "保証条件チェック");
-  const good = pickSection(result, "良い点");
-  const bad = pickSection(result, "改善点");
-  const titles = pickSection(result, "改善タイトル案");
-  const type = pickSection(result, "彼女感タイプ分析");
-
   const sections = [
-    { label: "総合点", text: total },
-    { label: "保証条件チェック", text: guarantee },
-    { label: "良い点", text: good },
-    { label: "改善点", text: bad },
-    { label: "改善タイトル案", text: titles },
-    { label: "タイプ分析", text: type },
+    { label: "総合点", text: pickSection(result, "総合点") },
+    { label: "保証条件チェック", text: pickSection(result, "保証条件チェック") },
+    { label: "良い点", text: pickSection(result, "良い点") },
+    { label: "改善点", text: pickSection(result, "改善点") },
+    { label: "改善タイトル案", text: pickSection(result, "改善タイトル案") },
+    { label: "タイプ分析", text: pickSection(result, "彼女感タイプ分析") },
   ];
 
   return (
@@ -85,7 +84,7 @@ export default function Home() {
         </h1>
 
         <p style={{ color: "#aaa", marginBottom: "28px" }}>
-          キャスト名・本文・画像有無を入力すると、AIが保証条件と改善点を分析します。
+          キャスト名・本文・画像有無・出勤時間を入力すると、AIが保証条件と改善点を分析します。
         </p>
 
         <div
@@ -95,57 +94,57 @@ export default function Home() {
             borderRadius: "24px",
             padding: "22px",
             boxShadow: "0 0 40px rgba(0,255,153,0.12)",
-            backdropFilter: "blur(10px)",
           }}
         >
           <input
             value={castName}
             onChange={(e) => setCastName(e.target.value)}
             placeholder="キャスト名"
-            style={{
-              width: "100%",
-              padding: "16px",
-              marginBottom: "16px",
-              borderRadius: "16px",
-              border: "1px solid #333",
-              background: "#151515",
-              color: "white",
-            }}
+            style={inputStyle}
           />
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <input
+              type="time"
+              value={workStart}
+              onChange={(e) => setWorkStart(e.target.value)}
+              style={inputStyle}
+            />
+
+            <input
+              type="time"
+              value={workEnd}
+              onChange={(e) => setWorkEnd(e.target.value)}
+              style={inputStyle}
+            />
+          </div>
 
           <textarea
             value={diary}
             onChange={(e) => setDiary(e.target.value)}
             placeholder="写メ日記本文を入力"
             style={{
-              width: "100%",
+              ...inputStyle,
               minHeight: "260px",
-              padding: "16px",
-              marginBottom: "16px",
-              borderRadius: "16px",
-              border: "1px solid #333",
-              background: "#151515",
-              color: "white",
             }}
           />
 
-          <div style={{ marginBottom: "16px" }}>
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                color: "#aaa",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={hasImage}
-                onChange={(e) => setHasImage(e.target.checked)}
-              />
-              画像あり
-            </label>
-          </div>
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              color: "#aaa",
+              marginBottom: "16px",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={hasImage}
+              onChange={(e) => setHasImage(e.target.checked)}
+            />
+            画像あり
+          </label>
 
           <button
             onClick={handleScore}
@@ -161,7 +160,6 @@ export default function Home() {
               color: "#081008",
               fontWeight: "bold",
               fontSize: "18px",
-              boxShadow: "0 0 24px rgba(0,255,153,0.35)",
             }}
           >
             {loading ? "採点中..." : "AI採点する"}
@@ -194,3 +192,13 @@ export default function Home() {
     </main>
   );
 }
+
+const inputStyle = {
+  width: "100%",
+  padding: "16px",
+  marginBottom: "16px",
+  borderRadius: "16px",
+  border: "1px solid #333",
+  background: "#151515",
+  color: "white",
+};
