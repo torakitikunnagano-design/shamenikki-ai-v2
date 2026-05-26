@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function pickSection(text: string, title: string) {
   const start = text.indexOf(title);
@@ -28,10 +28,23 @@ function pickSection(text: string, title: string) {
 
 export default function Home() {
   const [castName, setCastName] = useState("");
+  const [casts, setCasts] = useState<any[]>([]);
   const [diary, setDiary] = useState("");
   const [hasImage, setHasImage] = useState(false);
+  const [workStart, setWorkStart] = useState("");
+  const [workEnd, setWorkEnd] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/casts")
+      .then((res) => res.json())
+      .then((data) => {
+        const active = data.filter((c: any) => c.is_active);
+        setCasts(active);
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleScore() {
     setLoading(true);
@@ -44,6 +57,8 @@ export default function Home() {
         castName,
         diary,
         hasImage,
+        workStart,
+        workEnd,
       }),
     });
 
@@ -95,22 +110,55 @@ export default function Home() {
             boxShadow: "0 0 40px rgba(0,255,153,0.12)",
           }}
         >
-          <input
-            value={castName}
-            onChange={(e) => setCastName(e.target.value)}
-            placeholder="キャスト名"
-            style={inputStyle}
-          />
+          {casts.length > 0 ? (
+            <select
+              value={castName}
+              onChange={(e) => setCastName(e.target.value)}
+              style={{ ...inputStyle, appearance: "none" }}
+            >
+              <option value="">キャスト名を選択</option>
+              {casts.map((c: any) => (
+                <option key={c.name} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              value={castName}
+              onChange={(e) => setCastName(e.target.value)}
+              placeholder="キャスト名"
+              style={inputStyle}
+            />
+          )}
 
           <textarea
             value={diary}
             onChange={(e) => setDiary(e.target.value)}
             placeholder="写メ日記本文を入力"
-            style={{
-              ...inputStyle,
-              minHeight: "260px",
-            }}
+            style={{ ...inputStyle, minHeight: "260px" }}
           />
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+            <div>
+              <p style={{ color: "#aaa", fontSize: "13px", marginBottom: "6px" }}>出勤時間</p>
+              <input
+                type="time"
+                value={workStart}
+                onChange={(e) => setWorkStart(e.target.value)}
+                style={{ ...inputStyle, marginBottom: 0 }}
+              />
+            </div>
+            <div>
+              <p style={{ color: "#aaa", fontSize: "13px", marginBottom: "6px" }}>退勤時間</p>
+              <input
+                type="time"
+                value={workEnd}
+                onChange={(e) => setWorkEnd(e.target.value)}
+                style={{ ...inputStyle, marginBottom: 0 }}
+              />
+            </div>
+          </div>
 
           <label
             style={{
@@ -119,6 +167,7 @@ export default function Home() {
               gap: "10px",
               color: "#aaa",
               marginBottom: "16px",
+              marginTop: "16px",
             }}
           >
             <input
@@ -143,6 +192,7 @@ export default function Home() {
               color: "#081008",
               fontWeight: "bold",
               fontSize: "18px",
+              cursor: loading ? "not-allowed" : "pointer",
             }}
           >
             {loading ? "採点中..." : "AI採点する"}
@@ -176,7 +226,7 @@ export default function Home() {
   );
 }
 
-const inputStyle = {
+const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "16px",
   marginBottom: "16px",
@@ -184,4 +234,5 @@ const inputStyle = {
   border: "1px solid #333",
   background: "#151515",
   color: "white",
+  boxSizing: "border-box",
 };
